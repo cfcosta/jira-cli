@@ -1,0 +1,26 @@
+[package]
+name = "jira"
+version = "0.1.0"
+authors = ["Cainã Costa <cainan.costa@gmail.com>"]
+
+[dependencies]
+# HTTP Client
+hyper = "*"
+
+# Deserialization
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+toml = { git = "https://github.com/cfcosta/toml-rs.git" , features = ["serde"] }
+
+# CLI Handling
+clap = "*"
+
+# Logging
+log = "*"
+
+# Terminal Coloring
+termion = "*"
+
+# XDG path support
+xdg-basedir = "*"
