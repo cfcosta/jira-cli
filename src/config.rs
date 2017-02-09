@@ -1,20 +1,27 @@
 extern crate xdg_basedir;
 extern crate toml;
 
+use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Config {
     pub host: HostConfig
 }
 
-#[derive(Deserialize, Debug, Clone)]
+impl Default for Config { fn default() -> Config { Config {
+            host: HostConfig { hostname: String::from("http://example.com") }
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct HostConfig {
     pub hostname: String
 }
 
-pub fn read_config() -> Config {
+pub fn read() -> Config {
     let mut config_home = xdg_basedir::get_config_home()
         .expect("Could not find config directory from XDG!");
     config_home.push("jira");
@@ -35,4 +42,28 @@ pub fn read_config() -> Config {
 
     toml::from_str(&*config)
         .expect("Could not parse configuration file!")
+}
+
+pub fn write_defaults() {
+    let mut config_home = xdg_basedir::get_config_home()
+        .expect("Could not find config directory from XDG!");
+    config_home.push("jira");
+
+    fs::create_dir_all(&config_home)
+        .expect("Failed to create directory for config!");
+
+    let mut config_file = xdg_basedir::get_config_home()
+        .expect("Could not find config directory from XDG!");
+    config_file.push("jira");
+    config_file.push("config");
+    config_file.set_extension("toml");
+
+    let defaults: Config = Default::default();
+    let config = toml::to_string(&defaults)
+        .expect("Failed to serialize default config!");
+
+    let mut file = File::create(config_file)
+        .expect("Failed to open config file!");
+
+    write!(file, "{}", config);
 }

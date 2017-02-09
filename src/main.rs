@@ -1,4 +1,5 @@
 extern crate clap;
+extern crate toml;
 extern crate reqwest;
 
 #[macro_use]
@@ -27,29 +28,18 @@ impl log::Log for SimpleLogger {
     }
 }
 
-#[derive(Clone, Default)]
-struct Config {
-    color: bool,
-}
-
 fn main() {
     let matches = App::new("jira")
         .version("0.1")
         .about("CLI client for JIRA issues")
         .author("Cainã Costa <me@cfcosta.com>")
         .arg(
-            Arg::with_name("color")
-            .help("Enable colors")
-            .long("color")
-            .short("c")
-            )
-        .arg(
             Arg::with_name("verbose")
             .help("Sets the level of verbosity")
             .long("verbose")
             .short("v")
             .multiple(true)
-            )
+        )
         .subcommand(
             SubCommand::with_name("issue")
             .about("View an issue")
@@ -58,8 +48,12 @@ fn main() {
                 .help("The id of the issue to view")
                 .index(1)
                 .required(true)
-                )
             )
+        )
+        .subcommand(
+            SubCommand::with_name("copy-cfg")
+            .about("Copy the default config to config path")
+        )
         .get_matches();
 
     let log_level = match matches.occurrences_of("verbose") {
@@ -75,12 +69,9 @@ fn main() {
         Box::new(SimpleLogger)
     }).expect("Logger could not be initialized!");
 
-    let colors = matches.is_present("color");
-
-    debug!("[Config] Use Colors: {}", colors);
     debug!("[Config] Log level: {:?}", log_level);
 
-    let config = config::read_config();
+    let config = config::read();
     debug!("[Config] Loaded config: {:?}", config);
 
     match matches.subcommand() {
@@ -98,6 +89,9 @@ fn main() {
             debug!("[HTTP] Requested issue, got response: {:?}", issue);
 
             issue::print(issue);
+        },
+        ("copy-cfg", Some(_matches)) => {
+            config::write_defaults();
         },
         _ => { unreachable!("We should not get here...") }
     }

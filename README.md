@@ -14,13 +14,8 @@ install`:
 It works on public JIRAs, if having not oAuth support is a deal-breaker for
 you, check back in a week or so, its high on the milestones list.
 
-You are going to need a configuration file to use it, something like this:
-
-`$HOME/.config/jira/config.toml`
-```toml
-[host]
-  hostname = "https://domain.for.my.jira.org"
-```
+You are going to need a configuration file to use it, you can use `jira-cli
+copy-cfg` and the file will be available on `$HOME/.config/jira/config.toml`.
 
 ## LICENSE
 

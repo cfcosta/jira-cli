@@ -1,5 +1,5 @@
 [root]
-name = "jira"
+name = "jira-cli"
 version = "0.1.0"
 dependencies = [
  "clap 2.20.3 (registry+https://github.com/rust-lang/crates.io-index)",
