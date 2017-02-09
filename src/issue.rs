@@ -29,9 +29,9 @@ pub struct IssueFields {
     pub summary: String,
     pub description: String,
 
-    pub assignee: User,
-    pub creator: User,
-    pub reporter: User,
+    pub assignee: Option<User>,
+    pub creator: Option<User>,
+    pub reporter: Option<User>,
 
     pub project: Project,
 
@@ -46,6 +46,16 @@ pub struct Issue {
     pub id: String,
     pub key: String,
     pub fields: IssueFields
+}
+
+fn unwrap_user(user: Option<User>) -> User {
+    match user {
+        Some(u) => u,
+        None => User {
+            display_name: String::from("None"),
+            key: String::from("none")
+        }
+    }
 }
 
 pub fn print(issue: Issue) {
@@ -75,9 +85,9 @@ pub fn print(issue: Issue) {
     println!("");
 
     // Metadata
-    println!("* {}Creator:{} {}", style::Bold, style::Reset,  issue.fields.creator.display_name);
-    println!("* {}Assignee:{} {}", style::Bold, style::Reset, issue.fields.assignee.display_name);
-    println!("* {}Reporter:{} {}", style::Bold, style::Reset, issue.fields.reporter.display_name);
+    println!("* {}Creator:{} {}", style::Bold, style::Reset,  unwrap_user(issue.fields.creator).display_name);
+    println!("* {}Assignee:{} {}", style::Bold, style::Reset, unwrap_user(issue.fields.assignee).display_name);
+    println!("* {}Reporter:{} {}", style::Bold, style::Reset, unwrap_user(issue.fields.reporter).display_name);
 
     println!("");
 }
