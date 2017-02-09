@@ -1,5 +1,5 @@
 [package]
-name = "jira"
+name = "jira-cli"
 version = "0.1.0"
 authors = ["Cainã Costa <me@cfcosta.com>"]
 
