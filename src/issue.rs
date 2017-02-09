@@ -4,6 +4,12 @@ extern crate termion;
 extern crate hyphenation;
 extern crate textwrap;
 
+use self::termion::color;
+use self::termion::style;
+
+use self::hyphenation::Language;
+use self::textwrap::Wrapper;
+
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {
     #[serde(rename = "displayName")]
@@ -48,22 +54,32 @@ pub struct Issue {
     pub fields: IssueFields
 }
 
-fn unwrap_user(user: Option<User>) -> User {
-    match user {
-        Some(u) => u,
+fn format_user(user: Option<User>) -> User {
+    let user = match user {
+        Some(u) => {
+            let mut new_user = u.clone();
+
+            new_user.display_name = format!(
+                "{}{}{}{}{}",
+                style::Underline,
+                color::Fg(color::Blue),
+                new_user.display_name,
+                style::Reset,
+                color::Fg(color::Reset)
+            );
+
+            new_user
+        },
         None => User {
             display_name: String::from("None"),
             key: String::from("none")
         }
-    }
+    };
+
+    user
 }
 
 pub fn print(issue: Issue) {
-    use self::termion::color;
-    use self::termion::style;
-
-    use self::hyphenation::Language;
-    use self::textwrap::Wrapper;
 
     let corpus = hyphenation::load(Language::English_US).unwrap();
     let mut wrapper = Wrapper::new(80);
@@ -85,9 +101,9 @@ pub fn print(issue: Issue) {
     println!("");
 
     // Metadata
-    println!("* {}Creator:{} {}", style::Bold, style::Reset,  unwrap_user(issue.fields.creator).display_name);
-    println!("* {}Assignee:{} {}", style::Bold, style::Reset, unwrap_user(issue.fields.assignee).display_name);
-    println!("* {}Reporter:{} {}", style::Bold, style::Reset, unwrap_user(issue.fields.reporter).display_name);
+    println!("* {}Creator:{} {}", style::Bold, style::Reset,  format_user(issue.fields.creator).display_name);
+    println!("* {}Assignee:{} {}", style::Bold, style::Reset, format_user(issue.fields.assignee).display_name);
+    println!("* {}Reporter:{} {}", style::Bold, style::Reset, format_user(issue.fields.reporter).display_name);
 
     println!("");
 }
