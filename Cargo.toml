@@ -27,3 +27,7 @@ termion = "*"
 
 # XDG path support
 xdg-basedir = "*"
+
+# Word wrapping and hyphenation
+textwrap = "*"
+hyphenation = "*"

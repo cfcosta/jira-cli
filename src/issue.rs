@@ -1,6 +1,9 @@
 extern crate serde_json;
 extern crate termion;
 
+extern crate hyphenation;
+extern crate textwrap;
+
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {
     #[serde(rename = "displayName")]
@@ -46,10 +49,25 @@ pub struct Issue {
 }
 
 pub fn print(issue: Issue) {
-    use self::termion::color::{ Fg, Red, Reset };
+    use self::termion::color;
+    use self::termion::style;
+
+    use self::hyphenation::Language;
+    use self::textwrap::Wrapper;
+
+    let corpus = hyphenation::load(Language::English_US).unwrap();
+    let mut wrapper = Wrapper::new(80);
+    wrapper.corpus = Some(&corpus);
 
     println!("");
-    println!("[{}] {}{}{}", issue.key, Fg(Red), issue.fields.summary, Fg(Reset));
+    println!("{}[{}] {}{}{}{}",
+             style::Bold,
+             issue.key,
+             color::Fg(color::Green),
+             issue.fields.summary,
+             color::Fg(color::Reset),
+             style::Reset);
     println!("");
-    println!("{}", issue.fields.description);
+    println!("{}", wrapper.fill(issue.fields.description.as_str()));
+    println!("");
 }
