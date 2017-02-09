@@ -3,6 +3,9 @@ name = "jira"
 version = "0.1.0"
 authors = ["Cainã Costa <cainan.costa@gmail.com>"]
 
+[[bin]]
+name = "jira-cli"
+
 [dependencies]
 # HTTP Client
 reqwest = "*"
