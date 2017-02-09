@@ -29,7 +29,7 @@ impl log::Log for SimpleLogger {
 }
 
 fn main() {
-    let matches = App::new("jira")
+    let matches = App::new("jira-cli")
         .version("0.1")
         .about("CLI client for JIRA issues")
         .author("Cainã Costa <me@cfcosta.com>")
@@ -93,6 +93,6 @@ fn main() {
         ("copy-cfg", Some(_matches)) => {
             config::write_defaults();
         },
-        _ => { unreachable!("We should not get here...") }
+        _ => {}
     }
 }
