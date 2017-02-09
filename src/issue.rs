@@ -59,6 +59,7 @@ pub fn print(issue: Issue) {
     let mut wrapper = Wrapper::new(80);
     wrapper.corpus = Some(&corpus);
 
+    // Header
     println!("");
     println!("{}[{}] {}{}{}{}",
              style::Bold,
@@ -67,7 +68,16 @@ pub fn print(issue: Issue) {
              issue.fields.summary,
              color::Fg(color::Reset),
              style::Reset);
+
+    // Body
     println!("");
     println!("{}", wrapper.fill(issue.fields.description.as_str()));
+    println!("");
+
+    // Metadata
+    println!("* {}Creator:{} {}", style::Bold, style::Reset,  issue.fields.creator.display_name);
+    println!("* {}Assignee:{} {}", style::Bold, style::Reset, issue.fields.assignee.display_name);
+    println!("* {}Reporter:{} {}", style::Bold, style::Reset, issue.fields.reporter.display_name);
+
     println!("");
 }
