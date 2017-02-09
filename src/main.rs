@@ -1,14 +1,11 @@
 extern crate clap;
+extern crate reqwest;
 
 #[macro_use]
 extern crate log;
 
 #[macro_use]
 extern crate serde_derive;
-
-use std::fs::File;
-use std::path::Path;
-use std::io::prelude::*;
 
 use clap::{App, Arg, SubCommand};
 use log::{LogRecord, LogMetadata, LogLevelFilter};
@@ -42,26 +39,27 @@ fn main() {
         .author("Cainã Costa <me@cfcosta.com>")
         .arg(
             Arg::with_name("color")
-                .help("Enable colors")
-                .long("color")
-                .short("c")
-        )
+            .help("Enable colors")
+            .long("color")
+            .short("c")
+            )
         .arg(
             Arg::with_name("verbose")
-                .help("Sets the level of verbosity")
-                .long("verbose")
-                .short("v")
-                .multiple(true)
-        )
+            .help("Sets the level of verbosity")
+            .long("verbose")
+            .short("v")
+            .multiple(true)
+            )
         .subcommand(
             SubCommand::with_name("issue")
-                .about("View an issue")
-                .arg(
-                    Arg::with_name("issue_id")
-                        .help("The id of the issue to view")
-                        .index(1)
+            .about("View an issue")
+            .arg(
+                Arg::with_name("issue_id")
+                .help("The id of the issue to view")
+                .index(1)
+                .required(true)
                 )
-        )
+            )
         .get_matches();
 
     let log_level = match matches.occurrences_of("verbose") {
@@ -69,8 +67,7 @@ fn main() {
         1 => LogLevelFilter::Error,
         2 => LogLevelFilter::Warn,
         3 => LogLevelFilter::Info,
-        4 => LogLevelFilter::Debug,
-        5 | _ => LogLevelFilter::Trace,
+        4 | _ => LogLevelFilter::Debug
     };
 
     log::set_logger(|max_log_level| {
@@ -86,6 +83,22 @@ fn main() {
     let config = config::read_config();
     debug!("[Config] Loaded config: {:?}", config);
 
-    let mut file = File::open(&Path::new("issue2.js")).unwrap();
-    let mut issue = String::new();
+    match matches.subcommand() {
+        ("issue", Some(matches)) => {
+            let issue_id = matches.value_of("issue_id").unwrap();
+
+            let path = format!("{}/rest/api/latest/issue/{}"
+                               , config.host.hostname
+                               , issue_id);
+            let issue: issue::Issue = reqwest::get(&*path)
+                .expect("Failed to fetch issue!")
+                .json()
+                .expect("Failed to deserialize issue!");
+
+            debug!("[HTTP] Requested issue, got response: {:?}", issue);
+
+            issue::print(issue);
+        },
+        _ => { unreachable!("We should not get here...") }
+    }
 }

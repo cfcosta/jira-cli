@@ -45,13 +45,10 @@ pub struct Issue {
     pub fields: IssueFields
 }
 
-pub fn load_from_json(contents: String) -> Issue {
-    serde_json::from_str(&*contents).unwrap()
-}
-
 pub fn print(issue: Issue) {
     use self::termion::color::{ Fg, Red, Reset };
 
+    println!("");
     println!("[{}] {}{}{}", issue.key, Fg(Red), issue.fields.summary, Fg(Reset));
     println!("");
     println!("{}", issue.fields.description);

@@ -6,12 +6,12 @@ use std::io::prelude::*;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Config {
-    host: HostConfig
+    pub host: HostConfig
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct HostConfig {
-    hostname: String
+    pub hostname: String
 }
 
 pub fn read_config() -> Config {
