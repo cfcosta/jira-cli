@@ -71,20 +71,37 @@ fn main() {
 
     debug!("[Config] Log level: {:?}", log_level);
 
-    let config = config::read();
-    debug!("[Config] Loaded config: {:?}", config);
-
     match matches.subcommand() {
         ("issue", Some(matches)) => {
+            let config = config::read();
+            debug!("[Config] Loaded config: {:?}", config);
+
             let issue_id = matches.value_of("issue_id").unwrap();
 
             let path = format!("{}/rest/api/latest/issue/{}"
                                , config.host.hostname
                                , issue_id);
-            let issue: issue::Issue = reqwest::get(&*path)
-                .expect("Failed to fetch issue!")
-                .json()
-                .expect("Failed to deserialize issue!");
+            let client = reqwest::Client::new().unwrap();
+
+            let issue: issue::Issue = if config.auth.enabled {
+                let res = client
+                    .get(&*path)
+                    .header(reqwest::header::Authorization(
+                        reqwest::header::Basic {
+                            username: config.auth.username,
+                            password: Some(config.auth.password)
+                        }
+                    ))
+                    .send();
+
+                debug!("{:?}", res);
+                res
+            } else {
+                client.get(&*path).send()
+            }
+            .expect("Failed to fetch issue!")
+            .json()
+            .expect("Failed to deserialize issue!");
 
             debug!("[HTTP] Requested issue, got response: {:?}", issue);
 

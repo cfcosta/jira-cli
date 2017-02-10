@@ -9,8 +9,9 @@ name = "jira-cli"
 [dependencies]
 # HTTP Client
 reqwest = "*"
+hyper = "*"
 
-# Deserialization
+# Serialization
 serde = "*"
 serde_derive = "*"
 serde_json = "*"
