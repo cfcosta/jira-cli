@@ -8,27 +8,27 @@ name = "jira-cli"
 
 [dependencies]
 # HTTP Client
-reqwest = "*"
-hyper = "*"
+reqwest = "^0.4"
+hyper = "^0.10"
 
 # Serialization
-serde = "*"
-serde_derive = "*"
-serde_json = "*"
+serde = "^0.9"
+serde_derive = "^0.9"
+serde_json = "^0.9"
 toml = { git = "https://github.com/cfcosta/toml-rs.git" , features = ["serde"] }
 
 # CLI Handling
-clap = "*"
+clap = "^2.20"
 
 # Logging
-log = "*"
+log = "^0.3"
 
 # Terminal Coloring
-termion = "*"
+termion = "^1.1"
 
 # XDG path support
-xdg-basedir = "*"
+xdg-basedir = "^1.0"
 
 # Word wrapping and hyphenation
-textwrap = "*"
-hyphenation = "*"
+textwrap = "^0.4"
+hyphenation = "^0.6"
